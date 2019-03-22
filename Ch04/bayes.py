@@ -18,41 +18,42 @@ def loadDataSet():
 def createVocabList(dataSet):
     vocabSet = set([])  #create empty set
     for document in dataSet:
-        vocabSet = vocabSet | set(document) #union of the two sets
+        vocabSet = vocabSet | set(document) #union of the two sets，set(document)是什么？document除了列表好像没有其他的东西了
     return list(vocabSet)
 
 def setOfWords2Vec(vocabList, inputSet):
     returnVec = [0]*len(vocabList)
     for word in inputSet:
         if word in vocabList:
-            returnVec[vocabList.index(word)] = 1
+            returnVec[vocabList.index(word)] = 1    #哈希记录vocabList里面有没有inputSet相应的单词
         else: print "the word: %s is not in my Vocabulary!" % word
     return returnVec
 
-def trainNB0(trainMatrix,trainCategory):
-    numTrainDocs = len(trainMatrix)
-    numWords = len(trainMatrix[0])
-    pAbusive = sum(trainCategory)/float(numTrainDocs)
-    p0Num = ones(numWords); p1Num = ones(numWords)      #change to ones() 
+def trainNB0(trainMatrix,trainCategory):    #参数为setOfWords2Vec的返回值，trainMatrix是每一个句子是否存在的列表，trainCategory是abusive分类
+    numTrainDocs = len(trainMatrix) #矩阵的行数
+    numWords = len(trainMatrix[0])  #矩阵的列数
+    pAbusive = sum(trainCategory)/float(numTrainDocs)   #abusive中肯定的个数占比
+    p0Num = ones(numWords); p1Num = ones(numWords)      #change to ones() ，nowWords列
     p0Denom = 2.0; p1Denom = 2.0                        #change to 2.0
     for i in range(numTrainDocs):
         if trainCategory[i] == 1:
-            p1Num += trainMatrix[i]
-            p1Denom += sum(trainMatrix[i])
+            p1Num += trainMatrix[i] #在一个去重的列表里，2表示出现过
+            p1Denom += sum(trainMatrix[i])  #p1Denom表示2与每个句子出现过的和
         else:
             p0Num += trainMatrix[i]
             p0Denom += sum(trainMatrix[i])
     p1Vect = log(p1Num/p1Denom)          #change to log()
     p0Vect = log(p0Num/p0Denom)          #change to log()
-    return p0Vect,p1Vect,pAbusive
+    return p0Vect,p1Vect,pAbusive   #统计学习方法中用到的那个修正公式
 
-def classifyNB(vec2Classify, p0Vec, p1Vec, pClass1):
+def classifyNB(vec2Classify, p0Vec, p1Vec, pClass1):    #看出现单词与给定类别的单词的概率乘积的和
     p1 = sum(vec2Classify * p1Vec) + log(pClass1)    #element-wise mult
     p0 = sum(vec2Classify * p0Vec) + log(1.0 - pClass1)
     if p1 > p0:
         return 1
     else: 
         return 0
+
     
 def bagOfWords2VecMN(vocabList, inputSet):
     returnVec = [0]*len(vocabList)
@@ -69,7 +70,7 @@ def testingNB():
         trainMat.append(setOfWords2Vec(myVocabList, postinDoc))
     p0V,p1V,pAb = trainNB0(array(trainMat),array(listClasses))
     testEntry = ['love', 'my', 'dalmation']
-    thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
+    thisDoc = array(setOfWords2Vec(myVocabList, testEntry)) #hash中有没有相应的测试单词
     print testEntry,'classified as: ',classifyNB(thisDoc,p0V,p1V,pAb)
     testEntry = ['stupid', 'garbage']
     thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
@@ -79,6 +80,8 @@ def textParse(bigString):    #input is big string, #output is word list
     import re
     listOfTokens = re.split(r'\W*', bigString)
     return [tok.lower() for tok in listOfTokens if len(tok) > 2] 
+
+#以上内容我有一半没看懂是咋回事，但是基础的东西还是知道的，就看如何调用了
     
 def spamTest():
     docList=[]; classList = []; fullText =[]
