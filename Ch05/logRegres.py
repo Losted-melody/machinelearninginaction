@@ -9,25 +9,25 @@ def loadDataSet():
     dataMat = []; labelMat = []
     fr = open('testSet.txt')
     for line in fr.readlines():
-        lineArr = line.strip().split()
-        dataMat.append([1.0, float(lineArr[0]), float(lineArr[1])])
-        labelMat.append(int(lineArr[2]))
+        lineArr = line.strip().split()  #这个split()是怎么回事？？？按空格分？
+        dataMat.append([1.0, float(lineArr[0]), float(lineArr[1])]) #就两列数据
+        labelMat.append(int(lineArr[2]))    #数据分类
     return dataMat,labelMat
 
 def sigmoid(inX):
     return 1.0/(1+exp(-inX))
 
 def gradAscent(dataMatIn, classLabels):
-    dataMatrix = mat(dataMatIn)             #convert to NumPy matrix
-    labelMat = mat(classLabels).transpose() #convert to NumPy matrix
+    dataMatrix = mat(dataMatIn)             #convert to NumPy matrixmat()   mat函数中数据可以为字符串以空格和分号(；)分割，或者为列表形式以逗号（，）分割。而array()函数中数据只能为后者形式。
+    labelMat = mat(classLabels).transpose() #convert to NumPy matrix    不加参数转置矩阵，加了参数可以按坐标轴转置
     m,n = shape(dataMatrix)
     alpha = 0.001
     maxCycles = 500
-    weights = ones((n,1))
-    for k in range(maxCycles):              #heavy on matrix operations
+    weights = ones((n,1))   #n行1列
+    for k in range(maxCycles):              #heavy on matrix operations，这后面就是牛顿迭代法的具体过程了，迭代500次
         h = sigmoid(dataMatrix*weights)     #matrix mult
         error = (labelMat - h)              #vector subtraction
-        weights = weights + alpha * dataMatrix.transpose()* error #matrix mult
+        weights = weights + alpha * dataMatrix.transpose()* error #matrix mult，这jb咋搞的，我忘记证明了
     return weights
 
 def plotBestFit(weights):
@@ -43,11 +43,11 @@ def plotBestFit(weights):
         else:
             xcord2.append(dataArr[i,1]); ycord2.append(dataArr[i,2])
     fig = plt.figure()
-    ax = fig.add_subplot(111)
+        ax = fig.add_subplot(111)   #联想R语言
     ax.scatter(xcord1, ycord1, s=30, c='red', marker='s')
     ax.scatter(xcord2, ycord2, s=30, c='green')
     x = arange(-3.0, 3.0, 0.1)
-    y = (-weights[0]-weights[1]*x)/weights[2]
+    y = (-weights[0]-weights[1]*x)/weights[2]   #训练好的回归系数，逻辑吊炸天
     ax.plot(x, y)
     plt.xlabel('X1'); plt.ylabel('X2');
     plt.show()
@@ -55,8 +55,8 @@ def plotBestFit(weights):
 def stocGradAscent0(dataMatrix, classLabels):
     m,n = shape(dataMatrix)
     alpha = 0.01
-    weights = ones(n)   #initialize to all ones
-    for i in range(m):
+    weights = ones(n)   #initialize to all ones，n列
+    for i in range(m):  #美其名为随机迭代法，但是我没看懂。。。
         h = sigmoid(sum(dataMatrix[i]*weights))
         error = classLabels[i] - h
         weights = weights + alpha * error * dataMatrix[i]
@@ -68,7 +68,7 @@ def stocGradAscent1(dataMatrix, classLabels, numIter=150):
     for j in range(numIter):
         dataIndex = range(m)
         for i in range(m):
-            alpha = 4/(1.0+j+i)+0.0001    #apha decreases with iteration, does not 
+            alpha = 4/(1.0+j+i)+0.0001    #apha decreases with iteration, does not，不懂。。。为啥？
             randIndex = int(random.uniform(0,len(dataIndex)))#go to 0 because of the constant
             h = sigmoid(sum(dataMatrix[randIndex]*weights))
             error = classLabels[randIndex] - h
@@ -91,7 +91,7 @@ def colicTest():
             lineArr.append(float(currLine[i]))
         trainingSet.append(lineArr)
         trainingLabels.append(float(currLine[21]))
-    trainWeights = stocGradAscent1(array(trainingSet), trainingLabels, 1000)
+    trainWeights = stocGradAscent1(array(trainingSet), trainingLabels, 1000)    #返回匹配的回归系数
     errorCount = 0; numTestVec = 0.0
     for line in frTest.readlines():
         numTestVec += 1.0
@@ -99,15 +99,15 @@ def colicTest():
         lineArr =[]
         for i in range(21):
             lineArr.append(float(currLine[i]))
-        if int(classifyVector(array(lineArr), trainWeights))!= int(currLine[21]):
+        if int(classifyVector(array(lineArr), trainWeights))!= int(currLine[21]):   #判断是否正确
             errorCount += 1
     errorRate = (float(errorCount)/numTestVec)
     print "the error rate of this test is: %f" % errorRate
-    return errorRate
+    return errorRate    #错误率
 
 def multiTest():
     numTests = 10; errorSum=0.0
     for k in range(numTests):
         errorSum += colicTest()
-    print "after %d iterations the average error rate is: %f" % (numTests, errorSum/float(numTests))
+    print "after %d iterations the average error rate is: %f" % (numTests, errorSum/float(numTests))    #10次迭代之后的错误率
         
