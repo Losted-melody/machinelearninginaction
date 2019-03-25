@@ -43,7 +43,7 @@ def plotBestFit(weights):
         else:
             xcord2.append(dataArr[i,1]); ycord2.append(dataArr[i,2])
     fig = plt.figure()
-        ax = fig.add_subplot(111)   #联想R语言
+    ax = fig.add_subplot(111)   #联想R语言
     ax.scatter(xcord1, ycord1, s=30, c='red', marker='s')
     ax.scatter(xcord2, ycord2, s=30, c='green')
     x = arange(-3.0, 3.0, 0.1)
@@ -109,5 +109,5 @@ def multiTest():
     numTests = 10; errorSum=0.0
     for k in range(numTests):
         errorSum += colicTest()
-    print "after %d iterations the average error rate is: %f" % (numTests, errorSum/float(numTests))    #10次迭代之后的错误率
+    print "after %d iterations the average error rate is: %f" % (numTests, errorSum/float(numTests))    #10次迭代之后的错误率，为啥10次会不一样？
         
