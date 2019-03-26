@@ -18,7 +18,7 @@ def loadDataSet(fileName):
 def selectJrand(i,m):
     j=i #we want to select any J not equal to i
     while (j==i):
-        j = int(random.uniform(0,m))
+        j = int(random.uniform(0,m))    #uniform() 方法将随机生成下一个实数，它在 [x, y] 范围内
     return j
 
 def clipAlpha(aj,H,L):
@@ -28,7 +28,7 @@ def clipAlpha(aj,H,L):
         aj = L
     return aj
 
-def smoSimple(dataMatIn, classLabels, C, toler, maxIter):
+def smoSimple(dataMatIn, classLabels, C, toler, maxIter):   #从这里开始往下，全线爆炸，看不下去了，嘤嘤嘤
     dataMatrix = mat(dataMatIn); labelMat = mat(classLabels).transpose()
     b = 0; m,n = shape(dataMatrix)
     alphas = mat(zeros((m,1)))
